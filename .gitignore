@@ -11,3 +11,6 @@ dist/
 # of it: the ILP document, the assignment rubric, the original brand downloads and
 # the deployment runbook.
 docs/
+
+# Local notes for Claude, not part of the project.
+CLAUDE.md

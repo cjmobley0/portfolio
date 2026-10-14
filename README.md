@@ -66,8 +66,7 @@ the frontmatter. It renders under the "Final project" heading; until there is on
 the page shows a short note instead of an empty section.
 
 **Edit a personal project** — `src/data/projects.ts`. These are homepage cards only;
-there are no per-project pages. Keep the copy high level and only name a technology
-when it tells the reader something.
+there are no per-project pages.
 
 **Add a course** — this is the one change that touches two files. Create the `.md`
 file *and* add its code to the right term block in `src/data/terms.ts`, which
@@ -76,14 +75,6 @@ controls ordering and grouping. The two have to agree.
 Course frontmatter is schema-validated in `src/content.config.ts`, so a typo like
 `status: "done"` fails the build with a message naming the file and field rather
 than shipping something wrong.
-
-
-## Writing for these pages
-
-Both sections are public, and the portfolio is the kind of thing a current employer
-may read. Keep the copy describing what you do now rather than what you want to do
-next. The goals on the ILP page are written as learning goals for the degree, which
-is what the assignment asks for; keep them that way.
 
 ## CSUMB brand compliance
 

@@ -42,7 +42,6 @@ export const experience: Position[] = [
     ],
     highlights: [
       'Certify smoke, regression and end-to-end releases for the ad services behind Disney+, Hulu and ESPN.',
-      'Contribute to an AI-driven test pipeline that runs end-to-end validations across baseline and feature deployments, and reads Datadog data to catch performance regressions.',
       'Automate REST API test cases across several microservices.',
       'Use AI tools day to day to find edge cases sooner, surface defects earlier and widen coverage.',
       'Lead projects end to end, from planning through release, and drive process improvements along the way.',
