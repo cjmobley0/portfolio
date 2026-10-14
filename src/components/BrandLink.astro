@@ -1,0 +1,107 @@
+---
+/**
+ * A link to a profile, shown as that service's own logo.
+ *
+ * The two lockups have opposite polarity — GitHub's is white, LinkedIn's is blue —
+ * so neither can sit on the same background. Each button therefore carries the
+ * surface its logo was drawn for: dark for GitHub, white for LinkedIn. Both brands
+ * forbid recolouring their mark, so the background changes rather than the logo.
+ *
+ * The button padding doubles as the clear space both brands require, and the logos
+ * are set to a shared cap height so the two buttons read as a pair.
+ */
+
+import { site } from '../data/site';
+
+interface Props {
+  service: 'github' | 'linkedin';
+}
+
+const { service } = Astro.props;
+
+/** Intrinsic sizes of the supplied artwork, used to keep the aspect ratio exact. */
+const LOGOS = {
+  github: {
+    src: '/brand/GitHub_Lockup_White.png',
+    w: 1248,
+    h: 285,
+    href: site.links.github,
+    label: `${site.name} on GitHub`,
+  },
+  linkedin: {
+    src: '/brand/LI-Logo.png',
+    w: 2212,
+    h: 540,
+    href: site.links.linkedin,
+    label: `${site.name} on LinkedIn`,
+  },
+} as const;
+
+const LOGO_HEIGHT = 18;
+
+const logo = LOGOS[service];
+const width = Math.round((LOGO_HEIGHT * logo.w) / logo.h);
+---
+
+<a
+  class="brand-link"
+  data-service={service}
+  href={logo.href}
+  rel="me noopener"
+  aria-label={logo.label}
+>
+  {/* Eager rather than lazy: these are a few KB each, and the hero pair sits above
+      the fold where lazy-loading leaves an empty button for a beat. */}
+  <img
+    src={logo.src}
+    width={logo.w}
+    height={logo.h}
+    style={`width:${width}px; height:${LOGO_HEIGHT}px;`}
+    alt=""
+    loading="eager"
+    decoding="async"
+  />
+</a>
+
+<style>
+  .brand-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    line-height: 0;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  /* GitHub supplies a white lockup, so it needs a dark surface. */
+  .brand-link[data-service='github'] {
+    background: #161b22;
+    border-color: var(--rule-strong);
+  }
+
+  /* LinkedIn's mark is blue and may not be recoloured, so it gets white. */
+  .brand-link[data-service='linkedin'] {
+    background: #ffffff;
+  }
+
+  .brand-link:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+  }
+
+  .brand-link img {
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand-link {
+      transition: none;
+    }
+
+    .brand-link:hover {
+      transform: none;
+    }
+  }
+</style>

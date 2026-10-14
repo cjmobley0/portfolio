@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import PortfolioLayout from '../layouts/PortfolioLayout.astro';
 import { site } from '../data/site';
+import BrandLink from '../components/BrandLink.astro';
 import { pillars, skills } from '../data/skills';
 import { experience } from '../data/experience';
 import { projects } from '../data/projects';
@@ -21,8 +22,8 @@ const inProgress = courses.filter((c) => c.data.status === 'in-progress');
       I test streaming software for a living and build synthesizers in my own time.
     </p>
     <div class="cta">
-      <a class="btn" href={site.links.github} rel="me noopener">GitHub</a>
-      <a class="btn ghost" href={site.links.linkedin} rel="me noopener">LinkedIn</a>
+      <BrandLink service="github" />
+      <BrandLink service="linkedin" />
     </div>
   </section>
 
@@ -157,8 +158,8 @@ const inProgress = courses.filter((c) => c.data.status === 'in-progress');
       The quickest way to reach me is LinkedIn. The code is on GitHub.
     </p>
     <div class="cta">
-      <a class="btn" href={site.links.linkedin} rel="me noopener">LinkedIn</a>
-      <a class="btn ghost" href={site.links.github} rel="me noopener">GitHub</a>
+      <BrandLink service="linkedin" />
+      <BrandLink service="github" />
     </div>
   </section>
 </PortfolioLayout>
@@ -184,28 +185,6 @@ const inProgress = courses.filter((c) => c.data.status === 'in-progress');
     display: flex;
     gap: var(--space-s);
     flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-block;
-    padding: 0.6rem 1.1rem;
-    border-radius: 999px;
-    background: var(--accent);
-    color: var(--accent-ink);
-    font-weight: 600;
-    font-size: var(--step--1);
-    text-decoration: none;
-    border: 1px solid var(--accent);
-  }
-
-  .btn.ghost {
-    background: transparent;
-    color: var(--fg);
-    border-color: var(--rule-strong);
-  }
-
-  .btn:hover {
-    opacity: 0.9;
   }
 
   .section-title {
