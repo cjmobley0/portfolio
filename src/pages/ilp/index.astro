@@ -1,0 +1,336 @@
+---
+import { getCollection } from 'astro:content';
+import IlpLayout from '../../layouts/IlpLayout.astro';
+import CourseCard from '../../components/CourseCard.astro';
+import { site } from '../../data/site';
+import { ilp } from '../../data/ilp';
+import { terms, totalCourses, transferredPrerequisites } from '../../data/terms';
+
+const courses = await getCollection('courses');
+const byCode = new Map(courses.map((c) => [c.data.code, c]));
+
+const completed = courses.filter((c) => c.data.status === 'complete').length;
+const inProgress = courses.filter((c) => c.data.status === 'in-progress');
+---
+
+<IlpLayout
+  title={`Individual Learning Plan — ${site.name}`}
+  description={`${site.name}'s CSUMB Individual Learning Plan portfolio: ${ilp.degree}, ${ilp.programName}.`}
+>
+  <section class="intro shell">
+    <div class="intro-grid">
+      <div>
+        <p class="eyebrow">Individual Learning Plan</p>
+        <h1>{site.name}</h1>
+        <p class="degree">{ilp.degree} · {ilp.institution}</p>
+
+        {ilp.bio.map((para) => <p class="prose">{para}</p>)}
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section shell">
+    <h2>The program</h2>
+    <div class="program">
+      <div class="prose">
+        <p>{ilp.programDescription}</p>
+        <p class="program-link">
+          <a href={ilp.programUrl} rel="noopener">The program at CSUMB &rarr;</a>
+        </p>
+      </div>
+
+      <dl class="facts">
+        {
+          ilp.programFacts.map((fact) => (
+            <div>
+              <dt>{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section shell">
+    <h2>My goals</h2>
+    <div class="goals">
+      {
+        ilp.goals.map((goal) => (
+          <article class="goal">
+            <h3>{goal.title}</h3>
+            <p>{goal.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section shell">
+    <div class="courses-head">
+      <h2>Course pathway</h2>
+      <p class="progress">
+        <strong>{completed} of {totalCourses}</strong> complete
+        {inProgress.length > 0 && <> · {inProgress.length} in progress</>}
+      </p>
+    </div>
+
+    <p class="prose intro-note">
+      The CS Online pathway runs in 8-week terms, two per semester. Each course below
+      has its own page, updated as I complete it.
+    </p>
+
+    <div class="terms">
+      {
+        terms.map((term) => (
+          <section class="term">
+            <h3>{term.term}</h3>
+            {term.blocks.map((block) => (
+              <div class="block" id={block.id}>
+                <p class="block-label">
+                  Term {block.half} <span class="units">{block.units} units</span>
+                </p>
+                <div class="block-courses">
+                  {block.courses.map((code) => {
+                    const course = byCode.get(code);
+                    return course ? (
+                      <CourseCard course={course} showUnits={block.courses.length > 1} />
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            ))}
+          </section>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section shell">
+    <h2>Lower-division prerequisites</h2>
+    <p class="prose">
+      These were completed before the CSUMB pathway began and are not part of the
+      term-by-term plan above.
+    </p>
+    <ul class="prereqs">
+      {transferredPrerequisites.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+</IlpLayout>
+
+<style>
+  .intro {
+    padding-block: var(--space-xl);
+  }
+
+  .intro-grid {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  h1 {
+    font-size: var(--step-4);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .degree {
+    font-size: var(--step-1);
+    color: var(--muted);
+    margin: 0 0 var(--space-m);
+  }
+
+  .intro .prose {
+    margin: 0 0 var(--space-s);
+  }
+
+
+  h2 {
+    font-size: var(--step-2);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-m);
+  }
+
+  /* --- program --- */
+
+  .program {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  @media (min-width: 820px) {
+    .program {
+      grid-template-columns: 1.6fr 1fr;
+    }
+  }
+
+
+
+
+  .program-link {
+    margin: var(--space-s) 0 0;
+  }
+
+  .program-link a {
+    color: var(--csumb-blue);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+    padding-bottom: 1px;
+  }
+
+  .program-link a:hover {
+    border-bottom-color: var(--csumb-blue);
+  }
+
+  .facts {
+    margin: 0;
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    align-self: start;
+  }
+
+  .facts > div + div {
+    margin-top: var(--space-s);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--rule);
+  }
+
+  .facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .facts dd {
+    margin: 0.15rem 0 0;
+    font-weight: 500;
+  }
+
+  /* --- goals --- */
+
+  .goals {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .goal {
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--csumb-ocean);
+    border-radius: var(--radius-lg);
+  }
+
+  .goal h3 {
+    font-size: var(--step-1);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .goal p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* --- courses --- */
+
+  .courses-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+  }
+
+  .courses-head h2 {
+    margin-bottom: 0;
+  }
+
+  .progress {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .progress strong {
+    color: var(--csumb-blue);
+  }
+
+  .intro-note {
+    margin: var(--space-s) 0 var(--space-l);
+    color: var(--muted);
+  }
+
+  .terms {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .term h3 {
+    font-size: var(--step-1);
+    color: var(--csumb-blue);
+    padding-bottom: var(--space-2xs);
+    border-bottom: 2px solid var(--csumb-ocean);
+    margin-bottom: var(--space-s);
+  }
+
+  .block + .block {
+    margin-top: var(--space-m);
+  }
+
+  .block-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .units {
+    font-size: 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 1px solid var(--rule-strong);
+  }
+
+  .block-courses {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  /* --- prereqs --- */
+
+  .prereqs {
+    display: grid;
+    gap: 0.4rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prereqs li {
+    padding: 0.5rem 0.75rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .prereqs li::before {
+    content: '✓ ';
+    color: var(--csumb-green);
+    font-weight: 700;
+  }
+</style>

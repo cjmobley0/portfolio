@@ -1,0 +1,220 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import IlpLayout from '../../../layouts/IlpLayout.astro';
+import StatusBadge from '../../../components/StatusBadge.astro';
+import { ilp } from '../../../data/ilp';
+import { termBlocks } from '../../../data/terms';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const courses = await getCollection('courses');
+
+  return courses.map((course) => ({
+    params: { id: course.id },
+    props: { course },
+  }));
+};
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+}
+
+const { course } = Astro.props;
+const { code, title, units, term, half, status, fulfills, description } = course.data;
+
+const { Content } = await render(course);
+
+const block = termBlocks.find((b) => b.term === term && b.half === half);
+const sharesBlock = (block?.courses.length ?? 0) > 1;
+
+/* Course shells have no body yet. Rendering <Content /> regardless would leave a
+   bare "Final project" heading with nothing under it, which reads as a bug rather
+   than as work still to come. */
+const hasBody = (course.body ?? '').trim().length > 0;
+
+
+/* CST 349 carries a required deliverable that is still being written. Showing the
+   structure keeps the page honest about what is coming rather than looking empty. */
+const isCst349 = code === 'CST 349';
+---
+
+<IlpLayout title={`${code}: ${title} — ILP`} description={`${code} ${title} — CSUMB ILP portfolio.`}>
+  <article class="shell page">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/ilp">ILP</a> <span aria-hidden="true">/</span>
+      <a href="/ilp/courses">Courses</a> <span aria-hidden="true">/</span>
+      <span aria-current="page">{code}</span>
+    </nav>
+
+    <header class="head">
+      <p class="code">{code}</p>
+      <h1>{title}</h1>
+      <div class="meta">
+        <StatusBadge status={status} />
+        <span>{term} · Term {half}</span>
+        {units && <span>{units} units</span>}
+        {!units && block && sharesBlock && <span>{block.units} units (term block)</span>}
+        {fulfills && <span class="fulfills">Fulfills {fulfills}</span>}
+      </div>
+    </header>
+
+    <section class="block">
+      <h2>Course description</h2>
+      {
+        description ? (
+          <p class="prose">{description}</p>
+        ) : (
+          <p class="todo prose">
+            Course description to be added from the{' '}
+            <a href={ilp.catalogUrl} rel="noopener">CSUMB course catalog</a>.
+          </p>
+        )
+      }
+    </section>
+
+    <section class="block">
+      <h2>Final project</h2>
+      {
+        hasBody ? (
+          <div class="prose body">
+            <Content />
+          </div>
+        ) : status === 'planned' ? (
+          <p class="todo prose">
+            This course is scheduled for {term}, Term {half}. The final project will be
+            added here once the course is complete.
+          </p>
+        ) : (
+          <p class="todo prose">
+            Final project to be added.
+          </p>
+        )
+      }
+    </section>
+
+    {
+      isCst349 && (
+        <section class="block">
+          <h2>Industry Expert Interview Report</h2>
+          <p class="todo prose">
+            In progress — the interview report will be published here.
+          </p>
+        </section>
+      )
+    }
+
+    <nav class="pager">
+      <a href="/ilp/courses">&larr; All courses</a>
+    </nav>
+  </article>
+</IlpLayout>
+
+<style>
+  .page {
+    padding-block: var(--space-l) var(--space-xl);
+    max-width: 840px;
+  }
+
+  .crumbs {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: var(--space-m);
+  }
+
+  .crumbs a {
+    color: var(--csumb-blue);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .crumbs span[aria-hidden] {
+    margin-inline: 0.3rem;
+    opacity: 0.5;
+  }
+
+  .head {
+    padding-bottom: var(--space-m);
+    border-bottom: 2px solid var(--csumb-ocean);
+    margin-bottom: var(--space-l);
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: var(--step-0);
+    color: var(--csumb-ocean);
+    margin: 0 0 0.2rem;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-s);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .fulfills {
+    padding: 0.15rem 0.5rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+  }
+
+  .block + .block {
+    margin-top: var(--space-l);
+  }
+
+  .block h2 {
+    font-size: var(--step-1);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-xs);
+  }
+
+  .todo {
+    color: var(--muted);
+    font-style: italic;
+    padding: var(--space-s) var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--csumb-sunshine);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0;
+  }
+
+  .todo a {
+    color: var(--csumb-blue);
+  }
+
+  .body :global(h3) {
+    font-size: var(--step-0);
+    margin-top: var(--space-m);
+  }
+
+  .body :global(p) {
+    margin: 0 0 var(--space-s);
+  }
+
+  .pager {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--rule);
+    font-size: var(--step--1);
+  }
+
+  .pager a {
+    color: var(--csumb-blue);
+    text-decoration: none;
+  }
+
+  .pager a:hover {
+    text-decoration: underline;
+  }
+</style>

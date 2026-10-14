@@ -1,0 +1,83 @@
+---
+/**
+ * CSUMB primary logo, rendered under the university's published usage rules.
+ *
+ * Those rules say the logo may not be altered in any way, so this component
+ * encodes the constraints rather than leaving them to each call site:
+ *
+ *   - No CSS filter, no recolouring, no rotation.
+ *   - `height: auto` and an intrinsic aspect ratio, so it cannot be distorted.
+ *   - Minimum width 144px — the published 1.5in floor at 96dpi.
+ *   - Clear space on all sides. The rule is "the width/height of the M"; in this
+ *     artwork the M is ~22% of the image height, so padding is set from that.
+ *
+ * The supplied files are JPEGs with no alpha channel, so the logo sits on a panel
+ * matching its own background (white for the on-light variant) — otherwise a
+ * visible box appears. Swapping in an SVG or transparent PNG later is a one-line
+ * change here.
+ *
+ * `href` is opt-in: passing it wraps the mark in a link, and omitting it renders a
+ * plain element. Omit it inside an existing link — nested anchors are invalid HTML
+ * and browsers break the outer element apart, collapsing the layout around it.
+ */
+
+interface Props {
+  variant?: 'on-light' | 'on-dark';
+  /** Rendered width in px; clamped to the 144px minimum. */
+  width?: number;
+  /** Wrap the mark in a link. Omit when already inside one. */
+  href?: string;
+  class?: string;
+}
+
+const { variant = 'on-light', width = 200, href, class: className } = Astro.props;
+
+const MIN_WIDTH = 144;
+const renderWidth = Math.max(width, MIN_WIDTH);
+
+const sources = {
+  'on-light': { src: '/brand/csumb-primary-on-light.jpg', w: 1581, h: 574, bg: '#ffffff' },
+  'on-dark': { src: '/brand/csumb-primary-on-dark.jpg', w: 1587, h: 581, bg: '#214471' },
+} as const;
+
+const asset = sources[variant];
+const renderHeight = Math.round((renderWidth * asset.h) / asset.w);
+
+const Tag = href ? 'a' : 'span';
+const style = `--logo-bg:${asset.bg}; --logo-pad:${Math.round(renderHeight * 0.22)}px;`;
+---
+
+<Tag
+  class:list={['csumb-logo', className]}
+  style={style}
+  href={href}
+  rel={href ? 'noopener noreferrer' : undefined}
+>
+  <img
+    src={asset.src}
+    width={asset.w}
+    height={asset.h}
+    alt="California State University, Monterey Bay"
+    style={`width:${renderWidth}px; height:${renderHeight}px;`}
+    loading="eager"
+    decoding="async"
+  />
+</Tag>
+
+<style>
+  .csumb-logo {
+    display: inline-block;
+    /* Clear space per the brand guideline, carried by the panel the logo sits on. */
+    padding: var(--logo-pad);
+    background: var(--logo-bg);
+    border-radius: 4px;
+    line-height: 0;
+    flex-shrink: 0;
+  }
+
+  .csumb-logo img {
+    display: block;
+    /* No filter, no transform — the mark is reproduced exactly as supplied. */
+    max-width: 100%;
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+interface Props {
+  status: 'complete' | 'in-progress' | 'planned';
+}
+const { status } = Astro.props;
+
+const copy = {
+  complete: 'Complete',
+  'in-progress': 'In progress',
+  planned: 'Planned',
+} as const;
+---
+
+<span class="badge" data-status={status}>{copy[status]}</span>
+
+<style>
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  /* Valley Green and Ocean Blue fail 4.5:1 on white, so the text colour here is
+     the darker Monterey Bay Blue; the status colour carries on the border and a
+     tinted background instead. */
+  [data-status='complete'] {
+    color: #3f6b3d;
+    background: #eef5ee;
+  }
+
+  [data-status='in-progress'] {
+    color: #8a5a2b;
+    background: #fdf4e7;
+  }
+
+  [data-status='planned'] {
+    color: var(--muted);
+    background: transparent;
+    border-color: var(--rule-strong);
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import PortfolioLayout from '../layouts/PortfolioLayout.astro';
+import { site } from '../data/site';
+import { ilp } from '../data/ilp';
+---
+
+<PortfolioLayout title="About — Christopher Mobley" description="About Christopher Mobley.">
+  <div class="shell page">
+    <header class="head">
+      <p class="eyebrow">About</p>
+      <h1>{site.name}</h1>
+    </header>
+
+    <div class="prose body">
+      {ilp.bio.map((para) => <p>{para}</p>)}
+
+      <h2>Where I'm studying</h2>
+      <p>
+        I'm completing a {ilp.degree} through {ilp.institution}'s {ilp.programName},
+        graduating {ilp.expectedGraduation}. The coursework lives in its own section —
+        <a href="/ilp">my ILP portfolio</a> — with a page for every course in the pathway.
+      </p>
+
+      <h2>Elsewhere</h2>
+      <ul class="links">
+        <li><a href={site.links.github} rel="me noopener">GitHub</a></li>
+        <li><a href={site.links.linkedin} rel="me noopener">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+</PortfolioLayout>
+
+<style>
+  .page { padding-block: var(--space-l) var(--space-xl); max-width: 760px; }
+  h1 { font-size: var(--step-3); }
+  .head { margin-bottom: var(--space-l); }
+  .body p { color: var(--muted); margin: 0 0 var(--space-s); }
+  .body h2 { font-size: var(--step-1); margin: var(--space-l) 0 var(--space-xs); }
+  .body a { color: var(--accent); }
+  .links { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-m); }
+</style>

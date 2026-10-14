@@ -1,0 +1,494 @@
+---
+import { getCollection } from 'astro:content';
+import PortfolioLayout from '../layouts/PortfolioLayout.astro';
+import { site } from '../data/site';
+import { pillars, skills } from '../data/skills';
+import { experience } from '../data/experience';
+import { projects } from '../data/projects';
+import { ilp } from '../data/ilp';
+import { totalCourses } from '../data/terms';
+
+const courses = await getCollection('courses');
+const completed = courses.filter((c) => c.data.status === 'complete').length;
+const inProgress = courses.filter((c) => c.data.status === 'in-progress');
+---
+
+<PortfolioLayout title={`${site.name} — Software Engineer in Test`}>
+  <section class="hero shell">
+    <p class="eyebrow">Software Engineer in Test · Embedded Systems</p>
+    <h1>{site.tagline}</h1>
+    <p class="lede prose">
+      I test streaming software for a living and build synthesizers in my own time.
+    </p>
+    <div class="cta">
+      <a class="btn" href={site.links.github} rel="me noopener">GitHub</a>
+      <a class="btn ghost" href={site.links.linkedin} rel="me noopener">LinkedIn</a>
+    </div>
+  </section>
+
+  <section class="section shell">
+    <div class="pillars">
+      {
+        pillars.map((pillar) => (
+          <article class="pillar" data-pillar={pillar.id}>
+            <h2>{pillar.label}</h2>
+            <p>{pillar.summary}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section shell" id="experience">
+    <h2 class="section-title">Experience</h2>
+    <ol class="experience">
+      {
+        experience.map((position) => (
+          <li class="position">
+            <div class="position-head">
+              <h3>{position.company}</h3>
+              <div class="position-meta">
+                <span class="where">{position.location}</span>
+                <span class="position-dates">{position.dates}</span>
+              </div>
+            </div>
+            <ul class="roles">
+              {position.roles.map((role) => (
+                <li>
+                  <span class="role-title">{role.title}</span>
+                  {role.start && (
+                    <span class="role-dates">
+                      {role.start} – {role.end}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <ul class="highlights">
+              {position.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="section shell" id="projects">
+    <h2 class="section-title">Personal projects</h2>
+    <div class="projects">
+      {
+        projects.map((project) => (
+          <article class="project">
+            {project.image && (
+              <div class="shot">
+                <img
+                  src={project.image}
+                  alt={project.imageAlt ?? ''}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            )}
+            <div class="body">
+              <h3>{project.title}</h3>
+              <p class="prose">{project.summary}</p>
+              <ul class="stack">
+                {project.stack.map((tech) => (
+                  <li>{tech}</li>
+                ))}
+              </ul>
+              {project.imageNote && <p class="imgnote">{project.imageNote}</p>}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section shell" id="skills">
+    <h2 class="section-title">Skills</h2>
+    <div class="skills">
+      {
+        skills.map((group) => (
+          <div class="skill-group">
+            <h3>{group.label}</h3>
+            <ul>
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* The bridge into the academic section. It explains what is on the other side
+      before you get there, so /ilp is never a cold landing. */}
+  <section class="section shell">
+    <a class="bridge" href="/ilp">
+      <div>
+        <p class="eyebrow">Academic work</p>
+        <h2>CSUMB Individual Learning Plan</h2>
+        <p class="prose">
+          I'm finishing a {ilp.degree} at {ilp.institution}. My ILP portfolio has a
+          page for every course in the program, updated as I go.
+        </p>
+        <p class="progress">
+          <strong>{completed} of {totalCourses}</strong> courses complete
+          {inProgress.length > 0 && (
+            <>
+              {' · '}currently taking{' '}
+              {inProgress.map((c) => c.data.code).join(', ')}
+            </>
+          )}
+          {' · '}graduating {ilp.expectedGraduation}
+        </p>
+      </div>
+      <span class="bridge-cta">Enter the ILP portfolio →</span>
+    </a>
+  </section>
+
+  <section class="section shell" id="contact">
+    <h2 class="section-title">Contact</h2>
+    <p class="prose">
+      The quickest way to reach me is LinkedIn. The code is on GitHub.
+    </p>
+    <div class="cta">
+      <a class="btn" href={site.links.linkedin} rel="me noopener">LinkedIn</a>
+      <a class="btn ghost" href={site.links.github} rel="me noopener">GitHub</a>
+    </div>
+  </section>
+</PortfolioLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-2xl) var(--space-xl);
+  }
+
+  h1 {
+    font-size: var(--step-4);
+    max-width: 18ch;
+    margin-bottom: var(--space-s);
+  }
+
+  .lede {
+    font-size: var(--step-1);
+    color: var(--muted);
+    margin: 0 0 var(--space-m);
+  }
+
+  .cta {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--rule-strong);
+  }
+
+  .btn:hover {
+    opacity: 0.9;
+  }
+
+  .section-title {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-m);
+  }
+
+  /* --- pillars --- */
+
+  .pillars {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .pillar {
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-top: 2px solid var(--accent);
+    border-radius: var(--radius-lg);
+  }
+
+  .pillar[data-pillar='embedded'] {
+    border-top-color: var(--accent-warm);
+  }
+
+  .pillar h2 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .pillar p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* --- experience --- */
+
+  .experience {
+    display: grid;
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .position {
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+
+  .position-head {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+
+  .position h3 {
+    font-size: var(--step-1);
+  }
+
+  .where {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  /* Location and the overall range sit together on the right of the company
+     line, so every position reads the same way whether or not its roles carry
+     their own dates. */
+  .position-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    text-align: right;
+  }
+
+  .position-dates {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  /* Once the meta block wraps onto its own line it is no longer opposite the
+     company name, so right-aligning it just strands the shorter line. */
+  @media (max-width: 480px) {
+    .position-meta {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
+  .roles {
+    display: grid;
+    gap: 0.2rem;
+    margin: var(--space-xs) 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .roles li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    font-size: var(--step--1);
+  }
+
+  .role-title {
+    font-weight: 600;
+  }
+
+  .role-dates {
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  .highlights {
+    margin: var(--space-s) 0 0;
+    padding-left: 1.1rem;
+    color: var(--muted);
+  }
+
+  .highlights li {
+    margin-bottom: 0.35rem;
+  }
+
+  /* --- projects --- */
+
+  .projects {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .project {
+    display: grid;
+    gap: var(--space-m);
+    align-items: center;
+    padding: var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+
+  @media (min-width: 820px) {
+    .project {
+      grid-template-columns: 1.1fr 1fr;
+    }
+
+    .project:nth-child(even) .shot {
+      order: 2;
+    }
+  }
+
+  .shot {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    line-height: 0;
+  }
+
+  .shot img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .project h3 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-xs);
+  }
+
+  .project .body p.prose {
+    color: var(--muted);
+    margin: 0 0 var(--space-s);
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stack li {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    color: var(--muted);
+  }
+
+  .imgnote {
+    margin: var(--space-s) 0 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* --- skills --- */
+
+  .skills {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .skill-group h3 {
+    font-size: var(--step-0);
+    margin-bottom: var(--space-xs);
+  }
+
+  .skill-group ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .skill-group li {
+    font-size: var(--step--1);
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    color: var(--muted);
+  }
+
+  /* --- bridge --- */
+
+  .bridge {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+    padding: var(--space-l);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    background: linear-gradient(135deg, #1a2740, #121722);
+    border: 1px solid var(--rule-strong);
+  }
+
+  .bridge:hover {
+    border-color: var(--accent);
+  }
+
+  .bridge h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-xs);
+  }
+
+  .bridge p.prose {
+    color: var(--muted);
+    margin: 0 0 var(--space-s);
+  }
+
+  .progress {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+    font-family: var(--font-mono);
+  }
+
+  .progress strong {
+    color: var(--fg);
+  }
+
+  .bridge-cta {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+</style>

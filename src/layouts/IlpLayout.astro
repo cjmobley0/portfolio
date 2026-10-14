@@ -1,0 +1,248 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ContextSwitcher from '../components/ContextSwitcher.astro';
+import CsumbLogo from '../components/CsumbLogo.astro';
+import { site, ilpNav } from '../data/site';
+import { ilp } from '../data/ilp';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<BaseLayout title={title} description={description} section="ilp">
+  {/* The return band. Every ILP page says what this section is and offers the way
+      back, so arriving here from anywhere is never context-free. */}
+  <div class="return-band">
+    <div class="shell band">
+      <p>
+        Academic portfolio of <strong>{site.name}</strong> · {ilp.institution}
+      </p>
+      <a class="back" href="/">&larr; Back to portfolio</a>
+    </div>
+  </div>
+
+  <header class="site-header" transition:name="shell" transition:animate="none">
+    <div class="shell bar">
+      <a class="brand" href="/ilp">
+        <CsumbLogo variant="on-light" width={168} />
+        <span class="brand-text">
+          <span class="brand-title">Individual Learning Plan</span>
+          <span class="brand-sub">{ilp.degree}</span>
+        </span>
+      </a>
+
+      <div class="controls">
+        <nav class="links" aria-label="ILP">
+          <ul>
+            {
+              ilpNav.map((item) => {
+                const active =
+                  item.href === '/ilp' ? path === '/ilp' : path.startsWith(item.href);
+                return (
+                  <li>
+                    <a href={item.href} aria-current={active ? 'page' : undefined}>
+                      {item.label}
+                    </a>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </nav>
+
+        <ContextSwitcher current="ilp" />
+      </div>
+    </div>
+  </header>
+
+  <main id="main" transition:animate="slide">
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell foot">
+      <p class="who">
+        {site.name} · {ilp.programName} · Expected graduation {ilp.expectedGraduation}
+      </p>
+      <ul class="social">
+        <li><a href="/">Personal portfolio</a></li>
+        <li><a href={site.links.github} rel="me noopener">GitHub</a></li>
+        <li><a href={site.links.linkedin} rel="me noopener">LinkedIn</a></li>
+      </ul>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .return-band {
+    background: var(--csumb-blue);
+    color: #fff;
+    font-size: var(--step--1);
+  }
+
+  .band {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-s);
+    padding-block: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .band p {
+    margin: 0;
+  }
+
+  .band strong {
+    font-weight: 600;
+  }
+
+  .back {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+    padding-bottom: 1px;
+    white-space: nowrap;
+  }
+
+  .back:hover {
+    border-bottom-color: #fff;
+  }
+
+  .return-band :global(:focus-visible) {
+    outline-color: #fff;
+  }
+
+  .site-header {
+    background: var(--bg);
+    border-bottom: 3px solid var(--csumb-blue);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding-block: var(--space-s);
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--rule-strong);
+    padding-left: var(--space-s);
+  }
+
+  .brand-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--step-0);
+    color: var(--csumb-blue);
+    line-height: 1.2;
+  }
+
+  .brand-sub {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+  }
+
+  .links ul {
+    display: flex;
+    gap: var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding-block: 0.35rem;
+    border-bottom: 2px solid transparent;
+  }
+
+  .links a:hover {
+    color: var(--csumb-blue);
+  }
+
+  .links a[aria-current='page'] {
+    color: var(--csumb-blue);
+    border-bottom-color: var(--csumb-ocean);
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    margin-top: var(--space-2xl);
+    padding-block: var(--space-l);
+    background: var(--surface);
+  }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+  }
+
+  .who {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .social {
+    display: flex;
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+  }
+
+  .social a {
+    color: var(--csumb-blue);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+    padding-bottom: 1px;
+  }
+
+  .social a:hover {
+    border-bottom-color: var(--csumb-blue);
+  }
+
+  @media (max-width: 760px) {
+    .brand-text {
+      border-left: 0;
+      padding-left: 0;
+    }
+
+    .brand {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+import PortfolioLayout from '../layouts/PortfolioLayout.astro';
+---
+
+<PortfolioLayout title="Not found — Christopher Mobley">
+  <div class="shell page">
+    <p class="eyebrow">404</p>
+    <h1>That page isn't here.</h1>
+    <p class="prose">
+      It may have moved, or the link may be wrong. Both sections of the site are below.
+    </p>
+    <div class="cta">
+      <a class="btn" href="/">Portfolio home</a>
+      <a class="btn ghost" href="/ilp">ILP portfolio</a>
+    </div>
+  </div>
+</PortfolioLayout>
+
+<style>
+  .page { padding-block: var(--space-2xl); }
+  h1 { font-size: var(--step-3); margin-bottom: var(--space-s); }
+  .prose { color: var(--muted); margin: 0 0 var(--space-m); }
+  .cta { display: flex; gap: var(--space-s); flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: var(--step--1);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+  }
+  .btn.ghost { background: transparent; color: var(--fg); border-color: var(--rule-strong); }
+</style>

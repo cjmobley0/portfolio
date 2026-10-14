@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens.
+
+   One token set, two skins. `data-section` on <html> swaps the values while the
+   spacing scale, type scale, card geometry and focus rings stay identical — that
+   shared geometry is what makes /ilp read as a wing of this site rather than a
+   second website.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Shared scale — never redefined per section. */
+  --step--1: clamp(0.82rem, 0.79rem + 0.14vw, 0.89rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.09rem);
+  --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.45rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.95rem);
+  --step-3: clamp(1.75rem, 1.47rem + 1.4vw, 2.6rem);
+  --step-4: clamp(2.1rem, 1.6rem + 2.5vw, 3.6rem);
+
+  --space-2xs: 0.375rem;
+  --space-xs: 0.625rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  --measure: 68ch;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shell-max: 1120px;
+
+  --font-body: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Space Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Portfolio — dark, technical. */
+:root,
+[data-section="portfolio"] {
+  --bg: #0b0d11;
+  --surface: #13161c;
+  --surface-2: #1a1f28;
+  --fg: #e9ecf1;
+  --muted: #99a1b0;
+  --rule: rgba(255, 255, 255, 0.09);
+  --rule-strong: rgba(255, 255, 255, 0.18);
+
+  /* Two pillars, two accents: cool for test, warm for embedded. */
+  --accent: #67e8f9;
+  --accent-ink: #0b0d11;
+  --accent-warm: #fcd34d;
+
+  --focus: #67e8f9;
+  color-scheme: dark;
+}
+
+/* ILP — light, CSUMB brand.
+   Contrast note: Monterey Bay Blue (#31456b) on white is ~9.3:1 and safe for body
+   text. Ocean Blue (~3.2:1) and Valley Green (~3.3:1) fail 4.5:1, so they are
+   restricted below to borders, large headings and accents — never body copy. */
+[data-section="ilp"] {
+  --bg: #ffffff;
+  --surface: #f4f7fa;
+  --surface-2: #e9eff5;
+  --fg: #1b2430;
+  --muted: #566274;
+  --rule: #dce4ed;
+  --rule-strong: #c2cfdd;
+
+  --csumb-blue: #31456b;
+  --csumb-ocean: #6b92b6;
+  --csumb-green: #689466;
+  --csumb-green-bright: #93b96c;
+  --csumb-sunshine: #e0b457;
+  --csumb-tangerine: #cc7e4c;
+
+  --accent: #31456b;
+  --accent-ink: #ffffff;
+  --accent-warm: #cc7e4c;
+
+  --focus: #31456b;
+  --font-display: Montserrat, Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-body: Montserrat, Inter, ui-sans-serif, system-ui, sans-serif;
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* --- layout primitives ----------------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding-inline: var(--space-s);
+}
+
+@media (min-width: 640px) {
+  .shell {
+    padding-inline: var(--space-m);
+  }
+}
+
+.section {
+  padding-block: var(--space-xl);
+}
+
+.section + .section {
+  border-top: 1px solid var(--rule);
+}
+
+.prose {
+  max-width: var(--measure);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 var(--space-xs);
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-s);
+  top: -100%;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--space-s);
+}
+
+/* --- cards ----------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  padding: var(--space-m);
+}
+
+/* --- view transitions ------------------------------------------------------
+   Astro's <ClientRouter /> already disables these under prefers-reduced-motion. */
+
+@view-transition {
+  navigation: auto;
+}

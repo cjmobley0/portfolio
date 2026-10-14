@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import IlpLayout from '../../../layouts/IlpLayout.astro';
+import CourseCard from '../../../components/CourseCard.astro';
+import { terms, totalCourses } from '../../../data/terms';
+
+const courses = await getCollection('courses');
+const byCode = new Map(courses.map((c) => [c.data.code, c]));
+
+const completed = courses.filter((c) => c.data.status === 'complete').length;
+---
+
+<IlpLayout title="Courses — ILP" description="Every course in the CSUMB CS Online pathway.">
+  <div class="shell page">
+    <header class="head">
+      <p class="eyebrow">Individual Learning Plan</p>
+      <h1>Courses</h1>
+      <p class="prose">
+        All {totalCourses} courses in the CS Online pathway, in the order I take them.{' '}
+        <strong>{completed}</strong> complete so far.
+      </p>
+    </header>
+
+    <div class="terms">
+      {
+        terms.map((term) => (
+          <section class="term">
+            <h2>{term.term}</h2>
+            {term.blocks.map((block) => (
+              <div class="block" id={block.id}>
+                <p class="block-label">
+                  Term {block.half} <span class="units">{block.units} units</span>
+                </p>
+                <div class="block-courses">
+                  {block.courses.map((code) => {
+                    const course = byCode.get(code);
+                    return course ? (
+                      <CourseCard course={course} showUnits={block.courses.length > 1} />
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            ))}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</IlpLayout>
+
+<style>
+  .page {
+    padding-block: var(--space-l) var(--space-xl);
+  }
+
+  .head {
+    margin-bottom: var(--space-l);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    color: var(--csumb-blue);
+    margin-bottom: var(--space-xs);
+  }
+
+  .head .prose {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .head strong {
+    color: var(--csumb-blue);
+  }
+
+  .terms {
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .term h2 {
+    font-size: var(--step-1);
+    color: var(--csumb-blue);
+    padding-bottom: var(--space-2xs);
+    border-bottom: 2px solid var(--csumb-ocean);
+    margin-bottom: var(--space-s);
+  }
+
+  .block + .block {
+    margin-top: var(--space-m);
+  }
+
+  .block-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .units {
+    font-size: 0.7rem;
+    padding-left: 0.6rem;
+    border-left: 1px solid var(--rule-strong);
+  }
+
+  .block-courses {
+    display: grid;
+    gap: var(--space-s);
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+</style>
