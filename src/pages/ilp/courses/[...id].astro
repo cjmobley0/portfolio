@@ -33,9 +33,13 @@ const sharesBlock = (block?.courses.length ?? 0) > 1;
 const hasBody = (course.body ?? '').trim().length > 0;
 
 
-/* CST 349 carries a required deliverable that is still being written. Showing the
-   structure keeps the page honest about what is coming rather than looking empty. */
+/* CST 349 carries a required deliverable separate from the final project. The
+   section shows the structure even before the report lands, so the page is honest
+   about what is coming rather than looking empty. */
 const isCst349 = code === 'CST 349';
+
+const report = (await getCollection('reports')).find((r) => r.data.course === code);
+const ReportContent = report ? (await render(report)).Content : null;
 ---
 
 <IlpLayout title={`${code}: ${title} — ILP`} description={`${code} ${title} — CSUMB ILP portfolio.`}>
@@ -96,9 +100,18 @@ const isCst349 = code === 'CST 349';
       isCst349 && (
         <section class="block">
           <h2>Industry Expert Interview Report</h2>
-          <p class="todo prose">
-            In progress — the interview report will be published here.
-          </p>
+          {report && ReportContent ? (
+            <>
+              <p class="lede">{report.data.title}</p>
+              <div class="prose body">
+                <ReportContent />
+              </div>
+            </>
+          ) : (
+            <p class="todo prose">
+              In progress — the interview report will be published here.
+            </p>
+          )}
         </section>
       )
     }
@@ -179,6 +192,12 @@ const isCst349 = code === 'CST 349';
     margin-bottom: var(--space-xs);
   }
 
+  .lede {
+    font-size: var(--step-0);
+    color: var(--muted);
+    margin: 0 0 var(--space-s);
+  }
+
   .todo {
     color: var(--muted);
     font-style: italic;
@@ -195,7 +214,13 @@ const isCst349 = code === 'CST 349';
 
   .body :global(h3) {
     font-size: var(--step-0);
+    color: var(--csumb-blue);
     margin-top: var(--space-m);
+    margin-bottom: var(--space-xs);
+  }
+
+  .body :global(h3:first-child) {
+    margin-top: 0;
   }
 
   .body :global(p) {

@@ -21,4 +21,18 @@ const courses = defineCollection({
   }),
 });
 
-export const collections = { courses };
+/**
+ * Written deliverables that sit alongside a course's final project, such as the
+ * CST 349 interview report. Kept out of the course body because that body is the
+ * final project and the two are separate submissions.
+ */
+const reports = defineCollection({
+  loader: glob({ base: './src/content/reports', pattern: '**/*.md' }),
+  schema: z.object({
+    /** Course code this report belongs to, matching a course's `code`. */
+    course: z.string(),
+    title: z.string(),
+  }),
+});
+
+export const collections = { courses, reports };
