@@ -1,0 +1,52 @@
+---
+interface Props {
+  src: string;
+  poster?: string;
+  /** Describes the video for screen readers and sits under the player. */
+  label: string;
+  /** Shown beside the label so the reader knows what they are committing to. */
+  runtime?: string;
+}
+
+const { src, poster, label, runtime } = Astro.props;
+---
+
+{/* preload="metadata" fetches the header rather than the file, so landing on the
+    page costs a few KB and the video only downloads once it is played. */}
+<figure class="player">
+  <video controls preload="metadata" poster={poster} playsinline aria-label={label}>
+    <source src={src} type="video/mp4" />
+    <p>
+      Your browser cannot play this video.
+      <a href={src} download>Download it instead</a>.
+    </p>
+  </video>
+  <figcaption>
+    {label}{runtime && <span class="runtime"> · {runtime}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .player {
+    margin: 0 0 var(--space-s);
+  }
+
+  video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--csumb-blue);
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+  }
+
+  figcaption {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-xs);
+  }
+
+  .runtime {
+    font-family: var(--font-mono);
+  }
+</style>

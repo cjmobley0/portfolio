@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import IlpLayout from '../../../layouts/IlpLayout.astro';
 import StatusBadge from '../../../components/StatusBadge.astro';
+import VideoPlayer from '../../../components/VideoPlayer.astro';
 import { ilp } from '../../../data/ilp';
 import { termBlocks } from '../../../data/terms';
 
@@ -20,7 +21,8 @@ interface Props {
 }
 
 const { course } = Astro.props;
-const { code, title, units, term, half, status, fulfills, description } = course.data;
+const { code, title, units, term, half, status, fulfills, description, video } =
+  course.data;
 
 const { Content } = await render(course);
 
@@ -78,21 +80,27 @@ const ReportContent = report ? (await render(report)).Content : null;
 
     <section class="block">
       <h2>Final project</h2>
+      {video && <VideoPlayer {...video} />}
       {
-        hasBody ? (
+        hasBody && (
           <div class="prose body">
             <Content />
           </div>
-        ) : status === 'planned' ? (
-          <p class="todo prose">
-            This course is scheduled for {term}, Term {half}. The final project will be
-            added here once the course is complete.
-          </p>
-        ) : (
-          <p class="todo prose">
-            Final project to be added.
-          </p>
         )
+      }
+      {
+        !video &&
+          !hasBody &&
+          (status === 'planned' ? (
+            <p class="todo prose">
+              This course is scheduled for {term}, Term {half}. The final project will be
+              added here once the course is complete.
+            </p>
+          ) : (
+            <p class="todo prose">
+              Final project to be added.
+            </p>
+          ))
       }
     </section>
 

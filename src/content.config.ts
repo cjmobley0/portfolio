@@ -18,6 +18,15 @@ const courses = defineCollection({
      * few courses the catalog program page does not list; never paraphrased.
      */
     description: z.string().optional(),
+    /** Recorded deliverable shown in the Final project section, if there is one. */
+    video: z
+      .object({
+        src: z.string(),
+        poster: z.string().optional(),
+        label: z.string(),
+        runtime: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
