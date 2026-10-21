@@ -4,6 +4,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import IlpLayout from '../../../layouts/IlpLayout.astro';
 import StatusBadge from '../../../components/StatusBadge.astro';
 import VideoPlayer from '../../../components/VideoPlayer.astro';
+import PdfViewer from '../../../components/PdfViewer.astro';
 import { ilp } from '../../../data/ilp';
 import { termBlocks } from '../../../data/terms';
 
@@ -23,6 +24,8 @@ interface Props {
 const { course } = Astro.props;
 const { code, title, units, term, half, status, fulfills, description, video } =
   course.data;
+/* Aliased off `document` so the name does not shadow the DOM global. */
+const doc = course.data.document;
 
 const { Content } = await render(course);
 
@@ -81,6 +84,7 @@ const ReportContent = report ? (await render(report)).Content : null;
     <section class="block">
       <h2>Final project</h2>
       {video && <VideoPlayer {...video} />}
+      {doc && <PdfViewer {...doc} />}
       {
         hasBody && (
           <div class="prose body">
@@ -90,6 +94,7 @@ const ReportContent = report ? (await render(report)).Content : null;
       }
       {
         !video &&
+          !doc &&
           !hasBody &&
           (status === 'planned' ? (
             <p class="todo prose">

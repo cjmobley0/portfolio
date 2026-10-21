@@ -27,6 +27,15 @@ const courses = defineCollection({
         runtime: z.string().optional(),
       })
       .optional(),
+    /** Written deliverable shown inline in the Final project section. */
+    document: z
+      .object({
+        src: z.string(),
+        title: z.string(),
+        pages: z.number().optional(),
+        thumbnail: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 

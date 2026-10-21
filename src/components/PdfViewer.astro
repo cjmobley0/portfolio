@@ -1,0 +1,126 @@
+---
+interface Props {
+  src: string;
+  /** Names the embedded frame for screen readers and labels the caption. */
+  title: string;
+  pages?: number;
+  /** First page, rendered as an image for the small-screen card. */
+  thumbnail?: string;
+}
+
+const { src, title, pages, thumbnail } = Astro.props;
+---
+
+<figure class="doc">
+  <object class="frame" data={src} type="application/pdf" title={title}>
+    {/* Shown only when the browser has no PDF viewer at all. */}
+    <p class="noembed">
+      This browser cannot display the PDF inline.{' '}
+      <a href={src} target="_blank" rel="noopener">Open it in a new tab</a>.
+    </p>
+  </object>
+
+  <a class="card" href={src} target="_blank" rel="noopener">
+    {thumbnail && <img src={thumbnail} alt="" width="510" height="660" loading="lazy" />}
+    <span class="card-text">
+      <strong>{title}</strong>
+      <span>{pages && `${pages} pages · `}Open the PDF</span>
+    </span>
+  </a>
+
+  <figcaption>
+    {title}
+    {pages && <span class="pages"> · {pages} pages</span>}
+    {' · '}
+    <a href={src} target="_blank" rel="noopener">Open in a new tab</a>
+  </figcaption>
+</figure>
+
+<style>
+  .doc {
+    margin: 0 0 var(--space-s);
+  }
+
+  .frame {
+    display: block;
+    width: 100%;
+    height: min(82vh, 900px);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .noembed {
+    margin: 0;
+    padding: var(--space-m);
+  }
+
+  .noembed a,
+  figcaption a {
+    color: var(--csumb-blue);
+  }
+
+  .card {
+    display: none;
+    gap: var(--space-s);
+    align-items: center;
+    padding: var(--space-s);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card img {
+    width: 72px;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+
+  .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .card-text strong {
+    color: var(--csumb-blue);
+  }
+
+  .card-text span {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  figcaption {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-xs);
+  }
+
+  .pages {
+    font-family: var(--font-mono);
+  }
+
+  /* Phone browsers either refuse to render a PDF in an <object> or show the first
+     page with no way to scroll, and the fallback children never fire because the
+     embed technically "worked". So below this width drop the embed and offer the
+     file to the system viewer instead. Keep this after the base rules; a media
+     query placed before them loses at equal specificity. */
+  @media (max-width: 760px) {
+    .frame {
+      display: none;
+    }
+
+    .card {
+      display: flex;
+    }
+
+    /* The card already carries the title, length and action. */
+    figcaption {
+      display: none;
+    }
+  }
+</style>
